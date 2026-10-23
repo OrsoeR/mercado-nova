@@ -25,3 +25,7 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+app/Http/Controllers/UserController.php.bak
+app/Http/Requests/UserRequest.php.bak
+app/Policies/UserPolicy.php.bak
+config/auth.php.respaldo

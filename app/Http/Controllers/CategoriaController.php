@@ -33,7 +33,7 @@ class CategoriaController extends Controller
     {
         $categoria = Categoria::create($request->validated());
 
-        Log::info('Categoría creada', [
+        Log::channel('productos')->info('Categoría creada', [
             'categoria_id' => $categoria->id,
             'user_id' => auth()->id(),
             'ip' => $request->ip(),
@@ -66,7 +66,7 @@ class CategoriaController extends Controller
     ): RedirectResponse {
         $categoria->update($request->validated());
 
-        Log::info('Categoría actualizada', [
+        Log::channel('productos')->info('Categoría actualizada', [
             'categoria_id' => $categoria->id,
             'user_id' => auth()->id(),
             'ip' => $request->ip(),
@@ -84,7 +84,7 @@ class CategoriaController extends Controller
         $categoriaId = $categoria->id;
         $categoria->delete();
 
-        Log::info('Categoría eliminada', [
+        Log::channel('productos')->info('Categoría eliminada', [
             'categoria_id' => $categoriaId,
             'user_id' => auth()->id(),
             'ip' => request()->ip(),

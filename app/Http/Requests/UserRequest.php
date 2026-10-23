@@ -17,38 +17,20 @@ class UserRequest extends FormRequest
             return false;
         }
 
-        // El administrador puede gestionar todos los usuarios.
         if ($user->isAdministrador()) {
             return true;
         }
 
-        // El gerente puede gestionar clientes y empleados.
-        if ($user->isGerente()) {
-            $usuarioObjetivo = $this->route('usuario');
+        if (!$user->isGerente()) {
+            return false;
+        }
 
-            // Para crear usuarios, solo puede asignar cliente o empleado.
-            if (!$usuarioObjetivo instanceof User) {
-                return in_array(
-                    $this->input('role'),
-                    [
-                        User::ROLE_CLIENTE,
-                        User::ROLE_EMPLEADO,
-                    ],
-                    true
-                );
-            }
+        $usuarioObjetivo = $this->route('usuario');
 
-            // Para editar, solo puede gestionar clientes y empleados,
-            // manteniendo esos mismos roles permitidos.
+        // El Gerente puede crear Clientes y Empleados.
+        if (!$usuarioObjetivo instanceof User) {
             return in_array(
-                $usuarioObjetivo->role,
-                [
-                    User::ROLE_CLIENTE,
-                    User::ROLE_EMPLEADO,
-                ],
-                true
-            ) && in_array(
-                $this->input('role', $usuarioObjetivo->role),
+                $this->input('role'),
                 [
                     User::ROLE_CLIENTE,
                     User::ROLE_EMPLEADO,
@@ -57,8 +39,25 @@ class UserRequest extends FormRequest
             );
         }
 
-        // Clientes y empleados no pueden gestionar usuarios.
-        return false;
+        // No puede editarse a sí mismo ni gestionar
+        // Gerentes o Administradores.
+        return $usuarioObjetivo->id !== $user->id
+            && in_array(
+                $usuarioObjetivo->role,
+                [
+                    User::ROLE_CLIENTE,
+                    User::ROLE_EMPLEADO,
+                ],
+                true
+            )
+            && in_array(
+                $this->input('role', $usuarioObjetivo->role),
+                [
+                    User::ROLE_CLIENTE,
+                    User::ROLE_EMPLEADO,
+                ],
+                true
+            );
     }
 
     protected function prepareForValidation(): void

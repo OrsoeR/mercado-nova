@@ -6,58 +6,59 @@ use App\Models\User;
 
 class UserPolicy
 {
-    /**
-     * Determina si el usuario puede ver la lista de usuarios.
-     */
     public function viewAny(User $user): bool
     {
         return $user->hasRole(
             User::ROLE_GERENTE,
-            'administrador'
+            User::ROLE_ADMINISTRADOR
         );
     }
 
-    /**
-     * Determina si puede consultar un usuario.
-     */
     public function view(User $user, User $model): bool
     {
         return $user->hasRole(
             User::ROLE_GERENTE,
-            'administrador'
+            User::ROLE_ADMINISTRADOR
         );
     }
 
     /**
-     * Determina si puede crear usuarios.
+     * Administrador y Gerente pueden crear usuarios.
      */
     public function create(User $user): bool
     {
-    return $user->hasRole(
-        User::ROLE_GERENTE,
-        User::ROLE_ADMINISTRADOR
-    );
-    }
-
-    /**
-     * Determina si puede actualizar un usuario.
-     */
-    public function update(User $user, User $model): bool
-    {
-    if ($user->isAdministrador()) {
-        return true;
-    }
-
-    return $user->isGerente()
-        && in_array(
-            $model->role,
-            [User::ROLE_CLIENTE, User::ROLE_EMPLEADO],
-            true
+        return $user->hasRole(
+            User::ROLE_GERENTE,
+            User::ROLE_ADMINISTRADOR
         );
     }
 
     /**
-     * Determina si puede eliminar usuarios.
+     * El Administrador puede editar cualquier usuario.
+     * El Gerente puede editar Clientes y Empleados,
+     * pero no Gerentes ni Administradores.
+     */
+    public function update(User $user, User $model): bool
+    {
+        if ($user->isAdministrador()) {
+            return true;
+        }
+
+        return $user->isGerente()
+            && $user->id !== $model->id
+            && in_array(
+                $model->role,
+                [
+                    User::ROLE_CLIENTE,
+                    User::ROLE_EMPLEADO,
+                ],
+                true
+            );
+    }
+
+    /**
+     * El Administrador puede eliminar otras cuentas.
+     * El Gerente solamente puede eliminar Clientes.
      */
     public function delete(User $user, User $model): bool
     {
@@ -65,11 +66,11 @@ class UserPolicy
             return false;
         }
 
-        if ($user->hasRole('administrador')) {
+        if ($user->isAdministrador()) {
             return true;
         }
 
-        return $user->hasRole(User::ROLE_GERENTE)
-            && $model->role === User::ROLE_CLIENTE;
+        return $user->isGerente()
+            && $model->isCliente();
     }
 }

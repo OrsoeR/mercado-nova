@@ -93,9 +93,15 @@ class UserController extends Controller
     {
         $this->authorize('update', $usuario);
 
+        $roles = auth()->user()->isAdministrador()
+            ? User::ROLES
+            : [
+                User::ROLE_CLIENTE => User::ROLES[User::ROLE_CLIENTE],
+            ];
+
         return view('usuarios.edit', [
             'user' => $usuario,
-            'roles' => User::ROLES,
+            'roles' => $roles,
         ]);
     }
 
@@ -110,24 +116,9 @@ class UserController extends Controller
 
         $data = $request->validated();
 
-        // Si la contraseÃ±a estÃ¡ vacÃ­a, conservar la actual.
+        // Si la contraseña está vacía, conservar la actual.
         if (empty($data['password'])) {
             unset($data['password']);
-        }
-
-        // Evitar que un gerente cambie su propio rol.
-        if (
-            $usuario->is($request->user())
-            && $request->user()->isGerente()
-            && isset($data['role'])
-            && $data['role'] !== User::ROLE_GERENTE
-        ) {
-            return back()
-                ->withInput()
-                ->with(
-                    'error',
-                    'No puedes quitarte tu propio rol de gerente.'
-                );
         }
 
         $usuario->update($data);

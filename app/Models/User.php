@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -29,6 +30,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'apellidos',
         'email',
         'role',
         'phone',
@@ -106,6 +108,21 @@ class User extends Authenticatable
     }
 
     /**
+     * Registros de la tabla intermedia asociados a sus productos.
+     */
+    public function asociacionesCategorias(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            CategoriaProducto::class,
+            Producto::class,
+            'usuario_id',
+            'producto_id',
+            'id',
+            'id'
+        );
+    }
+
+    /**
      * Ventas en las que este usuario es el cliente.
      */
     public function ventasComoCliente(): HasMany
@@ -122,29 +139,25 @@ class User extends Authenticatable
     }
 
     /**
-     * Categorías asociadas a los productos de este usuario.
+     * Consulta las categorías asociadas a los productos de este usuario.
      */
-    public function categoriasDeProductos(): HasManyThrough
+    public function categoriasDeProductos(): Builder
     {
-        return $this->hasManyThrough(
-            Categoria::class,
-            Producto::class,
-            'usuario_id',
-            'id',
-            'id',
-            'id'
-        )
-        ->join(
-            'categoria_producto',
-            'categorias.id',
-            '=',
-            'categoria_producto.categoria_id'
-        )
-        ->whereColumn(
-            'categoria_producto.producto_id',
-            'productos.id'
-        )
-        ->select('categorias.*')
-        ->distinct();
+        return Categoria::query()
+            ->join(
+                'categoria_producto',
+                'categorias.id',
+                '=',
+                'categoria_producto.categoria_id'
+            )
+            ->join(
+                'productos',
+                'productos.id',
+                '=',
+                'categoria_producto.producto_id'
+            )
+            ->where('productos.usuario_id', $this->id)
+            ->select('categorias.*')
+            ->distinct();
     }
 }
