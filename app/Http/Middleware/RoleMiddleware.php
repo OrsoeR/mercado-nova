@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
+ * 
  * Restringe una ruta a uno o más roles.
  * Uso en web.php:  ->middleware('role:gerente')  o  ->middleware('role:empleado,gerente')
+ * 
  */
 class RoleMiddleware
 {

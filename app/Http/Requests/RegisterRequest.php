@@ -43,17 +43,17 @@ class RegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'      => 'El nombre es obligatorio.',
-            'name.min'           => 'El nombre debe tener al menos 3 caracteres.',
-            'name.max'           => 'El nombre no puede pasar de 100 caracteres.',
-            'name.regex'         => 'El nombre solo puede contener letras y espacios.',
-            'email.required'     => 'El correo electrónico es obligatorio.',
-            'email.email'        => 'Escribe un correo electrónico válido.',
-            'email.unique'       => 'Ya existe una cuenta con este correo.',
-            'phone.digits'       => 'El teléfono debe tener exactamente 10 dígitos.',
-            'password.required'  => 'La contraseña es obligatoria.',
-            'password.confirmed' => 'Las contraseñas no coinciden.',
-            'password.min'       => 'La contraseña debe tener al menos 8 caracteres.',
+            'name.required'      =>  'El nombre es obligatorio.',
+            'name.min'           =>  'El nombre debe tener al menos 3 caracteres.',
+            'name.max'           =>  'El nombre no puede pasar de 100 caracteres.',
+            'name.regex'         =>  'El nombre solo puede contener letras y espacios.',
+            'email.required'     =>  'El correo electrónico es obligatorio.',
+            'email.email'        =>  'Escribe un correo electrónico válido.',
+            'email.unique'       =>  'Ya existe una cuenta con este correo.',
+            'phone.digits'       =>  'El teléfono debe tener exactamente 10 dígitos.',
+            'password.required'  =>  'La contraseña es obligatoria.',
+            'password.confirmed' =>  'Las contraseñas no coinciden.',
+            'password.min'       =>  'La contraseña debe tener al menos 8 caracteres.',
             // Los mensajes de letras/mayúsculas/números están en lang/es/validation.php
             'terms.accepted'     => 'Debes aceptar los términos y condiciones.',
         ];
